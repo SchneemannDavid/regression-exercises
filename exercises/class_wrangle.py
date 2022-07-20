@@ -29,8 +29,8 @@ def get_new_zillow_data():
     join propertylandusetype using (propertylandusetypeid)
     where propertylandusedesc = "Single Family Residential"
     """
-    df = pd.read_sql(sql, get_db_url('zillow'))
-    return df
+    return pd.read_sql(sql, get_db_url('zillow'))
+
 
 def handle_nulls(df):    
     # We keep 99.41% of the data after dropping nulls
@@ -65,9 +65,9 @@ def clean_variables(df):
     # Rename columns and 'fips' values to reflect actual location (to solidify column as categorical variable)
     df = df.drop(columns = 'taxamount')
     df = df.rename(columns = {'bedroomcnt':'bedrooms', 'bathroomcnt':'bathrooms', 'calculatedfinishedsquarefeet':'sq_ft', 'taxvaluedollarcnt':'property_value', 'yearbuilt':'year_built', 'fips':'location'}, inplace = True)
-    df = df.replace('6037', 'LA County')
-    df = df.replace('6059', 'Orange County')
-    df = df.replace('6111', 'Ventura County')
+    df = df.replace('6037', 'LA County', inplace=True)
+    df = df.replace('6059', 'Orange County', inplace=True)
+    df = df.replace('6111', 'Ventura County', inplace=True)
 
     return df
 
@@ -89,6 +89,6 @@ def wrangle_zillow():
 
     df = clean_variables(df)
 
-    # df.to_csv("zillow.csv", index=False)
+    df.to_csv("zillow.csv", index=False)
 
     return df
