@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 from env import user, password, host
 
@@ -64,10 +65,17 @@ def clean_variables(df):
     # Drop 'taxamount' column (variable is inconsistent based on time and location of collected value, could lead to poor analysis)
     # Rename columns and 'fips' values to reflect actual location (to solidify column as categorical variable)
     df = df.drop(columns = 'taxamount')
-    df = df.rename(columns = {'bedroomcnt':'bedrooms', 'bathroomcnt':'bathrooms', 'calculatedfinishedsquarefeet':'sq_ft', 'taxvaluedollarcnt':'property_value', 'yearbuilt':'year_built', 'fips':'location'}, inplace = True)
-    df = df.replace('6037', 'LA County')
-    df = df.replace('6059', 'Orange County')
-    df = df.replace('6111', 'Ventura County')
+    df = df.rename(columns = {'bedroomcnt':'bedrooms', 'bathroomcnt':'bathrooms', 'calculatedfinishedsquarefeet':'sq_ft', 'taxvaluedollarcnt':'home_value', 'yearbuilt':'year_built', 'fips':'location'})
+    df.location = df.location.replace(to_replace={6037:'LA County', 6059:'Orange County', 6111:'Ventura County'})
+
+    return df 
+
+# def tidy_variables(df):
+    # Changing location column values proved difficult when combined in the same function with drop and rename
+    # 
+    df['location'] = np.where((df.location =='6037'), 'LA County', df.location)
+    df['location'] = np.where((df.location =='6059'), 'Orange County', df.location)
+    df['location'] = np.where((df.location =='6111'), 'Ventura County', df.location)
 
     return df
 
@@ -88,6 +96,8 @@ def wrangle_zillow():
     df = handle_outliers(df)
 
     df = clean_variables(df)
+
+   # df = tidy_variables(df)
 
     # df.to_csv("zillow.csv", index=False)
 
