@@ -24,11 +24,12 @@ def get_new_zillow_data():
     """Returns a dataframe of all 2017 properties that are Single Family Residential"""
 
     sql = """
-    select 
+    SELECT 
     bedroomcnt, bathroomcnt, calculatedfinishedsquarefeet, taxvaluedollarcnt, yearbuilt, taxamount, fips
-    from properties_2017
-    join propertylandusetype using (propertylandusetypeid)
-    where propertylandusedesc = "Single Family Residential"
+    FROM properties_2017
+    JOIN propertylandusetype USING (propertylandusetypeid)
+    WHERE propertylandusedesc = "Single Family Residential"
+    AND predictions_2017.transactiondate LIKE "2017%%"
     """
     df = pd.read_sql(sql, get_db_url('zillow'))
     return df
@@ -70,15 +71,6 @@ def clean_variables(df):
 
     return df 
 
-# def tidy_variables(df):
-    # Changing location column values proved difficult when combined in the same function with drop and rename
-    # 
-    df['location'] = np.where((df.location =='6037'), 'LA County', df.location)
-    df['location'] = np.where((df.location =='6059'), 'Orange County', df.location)
-    df['location'] = np.where((df.location =='6111'), 'Ventura County', df.location)
-
-    return df
-
 def wrangle_zillow():
     """
     Acquires Zillow data
@@ -96,8 +88,6 @@ def wrangle_zillow():
     df = handle_outliers(df)
 
     df = clean_variables(df)
-
-   # df = tidy_variables(df)
 
     # df.to_csv("zillow.csv", index=False)
 
